@@ -4,6 +4,7 @@
     "start": "node ./src"
   },
   "dependencies": {
-    "axios": "^0.19.2"
+    "axios": "^0.19.2",
+    "node-schedule": "^1.3.2"
   }
 }
