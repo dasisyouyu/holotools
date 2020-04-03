@@ -1,0 +1,9 @@
+{
+  "name": "holotools-crawler-youtube",
+  "scripts": {
+    "start": "node ./src"
+  },
+  "dependencies": {
+    "axios": "^0.19.2"
+  }
+}

@@ -1,0 +1,40 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "crawler-youtube"
+  namespace: "default"
+  labels:
+    app: "crawler-youtube"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "crawler-youtube"
+  template:
+    metadata:
+      labels:
+        app: "crawler-youtube"
+    spec:
+      containers:
+      - name: "crawler-youtube-1"
+        image: "gcr.io/vtubersubs/holotools/crawler-youtube"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "crawler-youtube-hpa-jwif"
+  namespace: "default"
+  labels:
+    app: "crawler-youtube"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "crawler-youtube"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
