@@ -1,0 +1,12 @@
+steps:
+- name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "gcr.io/vtubersubs/holotools/crawler-youtube", "./services/crawler-youtube"]
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "gcr.io/vtubersubs/holotools/crawler-youtube"]
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./services/crawler-youtube/deploy.yaml
+  - --image=gcr.io/vtubersubs/holotools/crawler-youtube
+  - --location=asia-northeast1-a	
+  - --cluster=holotools
