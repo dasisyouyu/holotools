@@ -53,8 +53,8 @@ module.exports = function() {
       // Add the results to the final collection
       ytResults.data.items.forEach(channelItem => {
         updatedChannelInfos.push({
-          type: 'yt',
-          id: channelItem.id,
+          ytChannelId: channelItem.id,
+          bbSpaceId: null,
           name: channelItem.snippet.title,
           description: channelItem.snippet.description,
           thumbnail: channelItem.snippet.thumbnails.high.url,
@@ -69,9 +69,10 @@ module.exports = function() {
     // Save to Firestore
     for (let channelInfo of updatedChannelInfos) {
       // Save channel information
-      const channelKey = 'channel/yt:' + channelInfo.id
+      const channelKey = 'channel/yt:' + channelInfo.ytChannelId
       const channelRef = firestore.doc(channelKey)
-      await channelRef.set(channelInfo, { mergeFields: ['type','thumbnail','viewCount','subscriberCount'] })
+      // await channelRef.delete()
+      await channelRef.set(channelInfo, { merge: true })
         .then(res => {
           console.log('Successfully saved document', channelKey);
         })
@@ -80,9 +81,9 @@ module.exports = function() {
         })
 
       // Build channel's stats for today
+      let today = moment().format('YYYYMMDD')
       let channelStats = {
-        type: 'yt',
-        ytChannelId: channelInfo.id,
+        ytChannelId: channelInfo.ytChannelId,
         bbSpaceId: null,
         date: today,
         views: channelInfo.viewCount,
@@ -90,9 +91,10 @@ module.exports = function() {
       }
 
       // Savbe channel statistics for the day
-      const statsKey = 'channelstats/yt:' + channelInfo.id + ':' + moment().format('YYYYMMDD')
+      const statsKey = 'channelstats/yt:' + channelInfo.ytChannelId + ':' + today
       const statsRef = firestore.doc(statsKey)
-      await statsRef.set(channelStats, { merge: false, mergeFields:['type'] }) // do not update stats if exists
+      // await statsRef.delete()
+      await statsRef.set(channelStats, { merge: false }) // do not update stats if exists
         .then(res => {
           console.log('Successfully saved document', statsKey);
         })
@@ -104,6 +106,6 @@ module.exports = function() {
     console.log('crawlChannels() SUCCESS', result)
   })()
   .catch(err => {
-    console.log('crawlChannels() ERROR', err)
+    console.error('crawlChannels() ERROR', err)
   })
 }
