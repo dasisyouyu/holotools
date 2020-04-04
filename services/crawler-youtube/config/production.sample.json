@@ -1,6 +1,6 @@
 {
-  "application": {
-    "crawlCommentsAge": 172800
+  "keys": {
+    "google": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   },
   "channels": [
     "UCp6993wxpyDPHUpavwDFqgg",
@@ -43,11 +43,5 @@
     "UCNVEsYbiZjH5QLmGeSgTSzg",
     "UCGNI4MENvnsymYjKiZwv9eg",
     "UCANDOlYTJT7N5jlRC3zfzVA"
-  ],
-  "timings": {
-    "check-live": "0 * * * * *",
-    "update-channels": "0 0 0 * * *",
-    "crawl-videos": "0 0 * * * *",
-    "crawl-comments": "0 */5 * * * *"
-  }
+  ]
 }

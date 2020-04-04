@@ -1,0 +1,17 @@
+{
+  "application": {
+    "crawlCommentsAge": 172800
+  },
+  "keys": {
+    "google": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  },
+  "channels": [
+    
+  ],
+  "timings": {
+    "check-live": "0 * * * * *",
+    "update-channels": "0 0 0 * * *",
+    "crawl-videos": "0 0 * * * *",
+    "crawl-comments": "0 */5 * * * *"
+  }
+}
