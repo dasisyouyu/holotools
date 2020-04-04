@@ -54,7 +54,6 @@ module.exports = function() {
       ytResults.data.items.forEach(channelItem => {
         updatedChannelInfos.push({
           ytChannelId: channelItem.id,
-          bbSpaceId: null,
           name: channelItem.snippet.title,
           description: channelItem.snippet.description,
           thumbnail: channelItem.snippet.thumbnails.high.url,
@@ -84,7 +83,6 @@ module.exports = function() {
       let today = moment().format('YYYYMMDD')
       let channelStats = {
         ytChannelId: channelInfo.ytChannelId,
-        bbSpaceId: null,
         date: today,
         views: channelInfo.viewCount,
         subscribers: channelInfo.subscriberCount,
