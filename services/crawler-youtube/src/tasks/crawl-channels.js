@@ -53,6 +53,7 @@ module.exports = function() {
       // Add the results to the final collection
       ytResults.data.items.forEach(channelItem => {
         updatedChannelInfos.push({
+          type: 'yt',
           id: channelItem.id,
           name: channelItem.snippet.title,
           description: channelItem.snippet.description,
@@ -65,58 +66,39 @@ module.exports = function() {
       })
     }
 
-    // Save updates
+    // Save to Firestore
     for (let channelInfo of updatedChannelInfos) {
+      // Save channel information
       const channelKey = 'channel/yt:' + channelInfo.id
       const channelRef = firestore.doc(channelKey)
-      const channelDoc = await channelRef.get()
-      // Update channel inforamtion
-      if (!channelDoc.exists) {
-        // Newly added channel, create
-        await channelRef.create(channelInfo)
-          .then(res => {
-            console.log('Successfully created document', channelKey);
-          })
-          .catch(err => {
-            console.error('Unable to create document', err)
-          })
-        
-      } else {
-        // Existing channel, update
-        await channelRef.update({
-          thumbnail: channelInfo.thumbnail,
-          viewCount: channelInfo.viewCount,
-          subscriberCount: channelInfo.subscriberCount,
+      await channelRef.set(channelInfo, { mergeFields: ['type','thumbnail','viewCount','subscriberCount'] })
+        .then(res => {
+          console.log('Successfully saved document', channelKey);
         })
-          .then(res => {
-            console.log('Successfully updated document', channelKey);
-          })
-          .catch(err => {
-            console.error('Unable to update document', err)
-          })
+        .catch(err => {
+          console.error('Unable to save document', err)
+        })
+
+      // Build channel's stats for today
+      let channelStats = {
+        type: 'yt',
+        ytChannelId: channelInfo.id,
+        bbSpaceId: null,
+        date: today,
+        views: channelInfo.viewCount,
+        subscribers: channelInfo.subscriberCount,
       }
-      // Insert statistics for the day
-      const today = moment().format('YYYYMMDD')
-      const statsKey = 'channelstats/yt:' + channelInfo.id + ':' + today
+
+      // Savbe channel statistics for the day
+      const statsKey = 'channelstats/yt:' + channelInfo.id + ':' + moment().format('YYYYMMDD')
       const statsRef = firestore.doc(statsKey)
-      const statsDoc = await statsRef.get()
-      // Only create if none yet for this channel for this day
-      if (!statsDoc.exists) {
-        await statsRef.create({
-          type: 'yt',
-          ytChannelId: channelInfo.id,
-          bbSpaceId: null,
-          date: today,
-          views: channelInfo.viewCount,
-          subscribers: channelInfo.subscriberCount,
+      await statsRef.set(channelStats, { merge: false, mergeFields:['type'] }) // do not update stats if exists
+        .then(res => {
+          console.log('Successfully saved document', statsKey);
         })
-          .then(res => {
-            console.log('Successfully created document', statsKey);
-          })
-          .catch(err => {
-            console.error('Unable to create document', err)
-          })
-      }
+        .catch(err => {
+          console.error('Unable to save document', err)
+        })
     }
 
     console.log('crawlChannels() SUCCESS', result)
