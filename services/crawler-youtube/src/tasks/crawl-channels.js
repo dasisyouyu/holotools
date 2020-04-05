@@ -5,24 +5,21 @@
  * 
  * Logic:
   - get channels from config
+  - break into bacthes, 50 each
   - channels.list
     - part = snippet,contentDetails,statistics
     - fields = nextPageToken,items(id,snippet(title,description,publishedAt,thumbnails/high/url),contentDetails/relatedPlaylists/uploads,statistics)
-    - maxResults = 50
-    - (every day) numPages x 6 = ?
-    - if nextPageToken, repeat
+    - (every day) numPages x 7cost = ?
  */
 
- const config = require('config')
- const moment = require('moment-timezone')
- const {google} = require('googleapis')
- const {Firestore} = require('@google-cloud/firestore')
-
+const config = require('config')
+const moment = require('moment-timezone')
+const {google} = require('googleapis')
+const {Firestore} = require('@google-cloud/firestore')
 
 module.exports = function() {
+  console.log('crawlChannels() START');
   (async function(){
-    console.log('crawlChannels() START')
-    let result = {}
 
     // Initiate YouTube API
     const youtube = google.youtube({
@@ -38,7 +35,7 @@ module.exports = function() {
 
     // Get channels by page
     let channels = [].concat(config.channels)
-    while((batch = channels.splice(0, 6)).length > 0) {
+    while((batch = channels.splice(0, 50)).length > 0) {
       // Fetch channel infos from YouTube API
       let ytResults = await youtube.channels.list({
         part: 'snippet,contentDetails,statistics',
@@ -46,7 +43,7 @@ module.exports = function() {
         fields: 'nextPageToken,items(id,snippet(title,description,publishedAt,thumbnails/high/url),contentDetails/relatedPlaylists/uploads,statistics)',
         maxResults: 50
       }).catch(err => {
-        console.error('Unable to fetch channels.list', err)
+        console.error('crawlChannels() Unable to fetch channels.list', err)
         return null
       })
 
@@ -54,6 +51,7 @@ module.exports = function() {
       ytResults.data.items.forEach(channelItem => {
         updatedChannelInfos.push({
           ytChannelId: channelItem.id,
+          bbSpaceId: null,
           name: channelItem.snippet.title,
           description: channelItem.snippet.description,
           thumbnail: channelItem.snippet.thumbnails.high.url,
@@ -70,19 +68,19 @@ module.exports = function() {
       // Save channel information
       const channelKey = 'channel/yt:' + channelInfo.ytChannelId
       const channelRef = firestore.doc(channelKey)
-      // await channelRef.delete()
       await channelRef.set(channelInfo, { merge: true })
         .then(res => {
-          console.log('Successfully saved document', channelKey);
+          console.log('crawlChannels() Successfully saved channel', channelKey);
         })
         .catch(err => {
-          console.error('Unable to save document', err)
+          console.error('crawlChannels() Unable to save channel', err)
         })
 
       // Build channel's stats for today
       let today = moment().format('YYYYMMDD')
       let channelStats = {
         ytChannelId: channelInfo.ytChannelId,
+        bbSpaceId: null,
         date: today,
         views: channelInfo.viewCount,
         subscribers: channelInfo.subscriberCount,
@@ -91,18 +89,20 @@ module.exports = function() {
       // Savbe channel statistics for the day
       const statsKey = 'channelstats/yt:' + channelInfo.ytChannelId + ':' + today
       const statsRef = firestore.doc(statsKey)
-      // await statsRef.delete()
       await statsRef.set(channelStats, { merge: false }) // do not update stats if exists
         .then(res => {
-          console.log('Successfully saved document', statsKey);
+          console.log('crawlChannels() Successfully saved channelstats', statsKey);
         })
         .catch(err => {
-          console.error('Unable to save document', err)
+          console.error('crawlChannels() Unable to save channelstats', err)
         })
     }
 
-    console.log('crawlChannels() SUCCESS', result)
+    return Promise.resolve('Done.')
   })()
+  .then(res => {
+    console.log('crawlChannels() SUCCESS %s', res || '')
+  })
   .catch(err => {
     console.error('crawlChannels() ERROR', err)
   })
