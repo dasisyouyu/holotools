@@ -1,6 +1,9 @@
 {
   "name": "holotools-client-api",
-  "scripts": {},
+  "scripts": {
+    "start": "node ./src",
+    "dev": "cross-env NODE_ENV=development nodemon ./src"
+  },
   "dependencies": {
     "@google-cloud/firestore": "^3.7.3",
     "axios": "^0.19.2",
