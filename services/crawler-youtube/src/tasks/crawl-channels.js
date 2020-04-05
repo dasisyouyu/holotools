@@ -33,7 +33,12 @@ module.exports = function() {
     })
 
     // Initialize Firestore
-    const firestore = new Firestore()
+    const firestore = new Firestore({
+      credentials: {
+        client_email: process.env.GCP_AUTH_EMAIL,
+        private_key: process.env.GCP_AUTH_KEY,
+      }
+    })
 
     // Channel Collection
     let updatedChannelInfos = []
