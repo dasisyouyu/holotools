@@ -9,8 +9,11 @@
   - ytapi video.list
     - part = snippet,liveStreamingDetails
     - fields = items(id,snippet,liveStreamingDetails)
-    - (every minute) minsWithNew x 5cost = ? (only on minutes when are new videos)
   - update video records
+ * SCHEDULE: Every 2 mins
+    - [YTQUOTA] minsWithNewVids * 3cost = 150 (only on minutes when are new videos)
+    - [FS:READ] 720exec * 1search = 720
+    - [FS:WRITE] 720exec * numNewVideos = 50
  */
 
 const config = require('config')

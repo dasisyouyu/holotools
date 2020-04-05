@@ -9,7 +9,10 @@
   - channels.list
     - part = snippet,contentDetails,statistics
     - fields = nextPageToken,items(id,snippet(title,description,publishedAt,thumbnails/high/url),contentDetails/relatedPlaylists/uploads,statistics)
-    - (every day) numPages x 7cost = ?
+ * SCHEDULE: Every 1 day
+    - [YTQUOTA] 1exec * numPages * 7cost = 7
+    - [FS:READ] none
+    - [FS:WRITE] 1exec * numChannels * 2docs = 100
  */
 
 const config = require('config')

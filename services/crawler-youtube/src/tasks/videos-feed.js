@@ -5,7 +5,14 @@
  * Logic:
   - feed xml
     - first two videoIds, save to db
-    - (every 2 mins) 1440mins / 2mins * 2videoIds * numChannels
+ * SCHEDULE: Every 2 mins
+    - [YTQUOTA] none
+    - Cache Approach
+      - [FS:READ] none
+      - [FS:WRITE] numNewVids = 50 (varies with pod count, cache ttls, etc)
+    - Read Approach
+      - [FS:READ] 720exec * 2vids * numChannels = 72,000
+      - [FS:WRITE] numNewVids = 50
  */
 
 const config = require('config')
