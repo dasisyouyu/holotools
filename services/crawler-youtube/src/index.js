@@ -4,9 +4,11 @@ const schedule = require('node-schedule')
 const crawlChannels = require('./tasks/crawl-channels')
 const crawlVideos = require('./tasks/crawl-videos')
 const videosFeed = require('./tasks/videos-feed')
-const videosStatus = require('./tasks/videos-status')
+const videosInfo = require('./tasks/videos-info')
 const videosLive = require('./tasks/videos-live')
 const crawlComments = require('./tasks/crawl-comments')
+
+console.log('RUNNING YOUTUBE CRAWLER...')
 
 // Update channel information and get today's stats
 schedule.scheduleJob(config.timings['crawl-channels'], function(){
@@ -25,7 +27,7 @@ schedule.scheduleJob(config.timings['videos-feed'], function(){
 
 // Checks the status of newly added videos if they're past, upcoming, or live
 schedule.scheduleJob(config.timings['videos-status'], function(){
-  videosStatus()
+  videosInfo()
 })
 
 // Checks status of known live videos using heartbeat
@@ -37,5 +39,3 @@ schedule.scheduleJob(config.timings['videos-live'], function(){
 schedule.scheduleJob(config.timings['crawl-comments'], function(){
   crawlComments()
 })
-
-console.log('RUNNING YOUTUBE CRAWLER...')

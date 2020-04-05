@@ -2,6 +2,7 @@
   "name": "holotools-crawler-youtube",
   "scripts": {
     "start": "cross-env NODE_ENV=production node ./src",
+    "test": "cross-env NODE_ENV=development node ./src/test",
     "dev": "cross-env NODE_ENV=development nodemon ./src"
   },
   "dependencies": {
