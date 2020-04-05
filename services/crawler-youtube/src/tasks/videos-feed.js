@@ -15,9 +15,8 @@ const {Firestore} = require('@google-cloud/firestore')
 const videoIdRegex = RegExp('<yt:videoId>(.*?)</yt:videoId>','gim')
 
 module.exports = function() {
+  console.log('videosFeed() START');
   (async function(){
-    console.log('videosFeed() START')
-    let result = {}
 
     // Initialize Firestore
     const firestore = new Firestore({ keyFilename: 'gcp-key.json' })
@@ -28,10 +27,10 @@ module.exports = function() {
     // Run through all channels in config
     for (channelId of config.channels) {
       // Get YouTube feed XML
-      console.log('Fetching YT XML feed for', channelId);
+      console.log('videosFeed() Fetching YT XML feed for', channelId);
       let fetchFeed = await axios.get('https://www.youtube.com/feeds/videos.xml?channel_id=' + channelId)
         .catch(err => {
-          console.warn('Unable to fetch channel feed XML data', err)
+          console.warn('videosFeed() Unable to fetch channel feed XML data', err)
           return null
         })
       if (!fetchFeed || !fetchFeed.data) continue
@@ -47,18 +46,28 @@ module.exports = function() {
     for (videoId of videoIds) {
       const videoKey = 'video/yt:' + videoId
       const videoRef = firestore.doc(videoKey)
-      await videoRef.set({ ytVideoId: videoId }, { merge: true })
-        .then(res => {
-          console.log('Successfully saved video', videoId);
-        })
-        .catch(err => {
-          console.error('Unable to save video', err)
-        })
+      const videoData = await videoRef.get() /** @TODO Get from cache instead of firestore */
+      if (!videoData.exists) {
+        await videoRef.set({
+          ytVideoId: videoId,
+          bbVideoId: null,
+          status: 'new'
+        }, { merge: true })
+          .then(res => {
+            console.log('videosFeed() Successfully added video', videoId);
+          })
+          .catch(err => {
+            console.error('videosFeed() Unable to add video', err)
+          })
+      }
     }
-    
-    console.log('videosFeed() SUCCESS', result)
+
+    return Promise.resolve('Done.')
   })()
+  .then(res => {
+    console.log('videosFeed() SUCCESS %s', res || '')
+  })
   .catch(err => {
-    console.log('videosFeed() ERROR', err)
+    console.error('videosFeed() ERROR', err)
   })
 }
