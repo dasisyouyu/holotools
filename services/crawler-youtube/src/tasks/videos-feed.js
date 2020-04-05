@@ -26,7 +26,7 @@ module.exports = function() {
   (async function(){
 
     // Initialize Firestore
-    const firestore = new Firestore({ keyFilename: 'gcp-key.json' })
+    const firestore = new Firestore()
 
     // To compile list of new videoIDs to be saved
     let videoIds = []

@@ -31,7 +31,7 @@ module.exports = function() {
     })
 
     // Initialize Firestore
-    const firestore = new Firestore({ keyFilename: 'gcp-key.json' })
+    const firestore = new Firestore()
 
     // Channel Collection
     let updatedChannelInfos = []
