@@ -105,6 +105,4 @@ dist
 
 # Custom
 gcp-key.json
-services/*/config/*.json
-!services/*/config/*.sample.json
 dev
