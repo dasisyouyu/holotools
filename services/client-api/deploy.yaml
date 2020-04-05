@@ -1,0 +1,77 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: "client-api-config-prod"
+  namespace: "default"
+  labels:
+    app: "client-api"
+data:
+  NODE_ENV: "production"
+  SERVER_PORT: "8080"
+  GOOGLE_API_KEY: ""
+  GOOGLE_SERVICE_JSON: ""
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "client-api"
+  namespace: "default"
+  labels:
+    app: "client-api"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "client-api"
+  template:
+    metadata:
+      labels:
+        app: "client-api"
+    spec:
+      containers:
+      - name: "nginx-client-api"
+        image: "nginx:alpine"
+      - name: "client-api-2"
+        image: "gcr.io/vtubersubs/holotools/client-api"
+        env:
+        - name: "NODE_ENV"
+          valueFrom:
+            configMapKeyRef:
+              key: "NODE_ENV"
+              name: "client-api-config-prod"
+        - name: "SERVER_PORT"
+          valueFrom:
+            configMapKeyRef:
+              key: "SERVER_PORT"
+              name: "client-api-config-prod"
+        - name: "GOOGLE_API_KEY"
+          valueFrom:
+            configMapKeyRef:
+              key: "GOOGLE_API_KEY"
+              name: "client-api-config-prod"
+        - name: "GOOGLE_SERVICE_JSON"
+          valueFrom:
+            configMapKeyRef:
+              key: "GOOGLE_SERVICE_JSON"
+              name: "client-api-config-prod"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "client-api-hpa-prod"
+  namespace: "default"
+  labels:
+    app: "client-api"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "client-api"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80

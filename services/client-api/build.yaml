@@ -1,0 +1,12 @@
+steps:
+- name: "gcr.io/cloud-builders/docker"
+  args: ["build", "-t", "gcr.io/vtubersubs/holotools/client-api", "./services/client-api"]
+- name: "gcr.io/cloud-builders/docker"
+  args: ["push", "gcr.io/vtubersubs/holotools/client-api"]
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./services/client-api/deploy.yaml
+  - --image=gcr.io/vtubersubs/holotools/client-api
+  - --location=asia-northeast1-a	
+  - --cluster=holotools
