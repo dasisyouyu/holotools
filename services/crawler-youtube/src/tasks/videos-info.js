@@ -46,8 +46,6 @@ module.exports = function() {
     videoSch.forEach(videoItem => {
       videoResults[videoItem.id] = videoItem.data()
     })
-    console.log('FOUND NEW VIDEOS', Object.keys(videoResults).length);
-    
 
     // If no pending videos
     if (!Object.keys(videoResults).length)
