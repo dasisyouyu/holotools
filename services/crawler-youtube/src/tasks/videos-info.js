@@ -21,6 +21,8 @@ const moment = require('moment-timezone')
 const {google} = require('googleapis')
 const {Firestore} = require('@google-cloud/firestore')
 
+const googleKey = process.env.GOOGLE_API_KEY
+
 module.exports = function() {
   console.log('videosInfo() START');
   (async function(){
@@ -28,7 +30,7 @@ module.exports = function() {
     // Initiate YouTube API
     const youtube = google.youtube({
       version: 'v3',
-      auth: config.keys.google
+      auth: googleKey
     })
 
     // Initialize Firestore

@@ -18,9 +18,6 @@ spec:
       containers:
       - name: "crawler-youtube-1"
         image: "gcr.io/vtubersubs/holotools/crawler-youtube"
-        env:
-        - name: NODE_ENV
-          value: production
 ---
 apiVersion: "autoscaling/v2beta1"
 kind: "HorizontalPodAutoscaler"

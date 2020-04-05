@@ -2,9 +2,6 @@
   "application": {
     "crawlCommentsAge": 172800
   },
-  "keys": {
-    "google": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  },
   "channels": [
     
   ],
