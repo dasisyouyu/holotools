@@ -26,12 +26,7 @@ module.exports = function() {
   (async function(){
 
     // Initialize Firestore
-    const firestore = new Firestore({
-      credentials: {
-        client_email: process.env.GCP_AUTH_EMAIL,
-        private_key: process.env.GCP_AUTH_KEY,
-      }
-    })
+    const firestore = new Firestore()
 
     // To compile list of new videoIDs to be saved
     let videoIds = []

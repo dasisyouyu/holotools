@@ -36,12 +36,7 @@ module.exports = function() {
     })
 
     // Initialize Firestore
-    const firestore = new Firestore({
-      credentials: {
-        client_email: process.env.GCP_AUTH_EMAIL,
-        private_key: process.env.GCP_AUTH_KEY,
-      }
-    })
+    const firestore = new Firestore()
     
     // Look for videos without information or status
     let videoCol = firestore.collection('video')
