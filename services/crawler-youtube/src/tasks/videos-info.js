@@ -8,16 +8,16 @@
     - max 50
   - ytapi video.list
     - part = snippet,liveStreamingDetails
-    - fields = items(id,snippet,liveStreamingDetails)
+    - fields = items(id,snippet(channelId,title,description,publishedAt),status/embeddable,liveStreamingDetails)
   - update video records
  * SCHEDULE: Every 2 mins
-    - [YTQUOTA] minsWithNewVids * 3cost = 150 (only on minutes when are new videos)
+    - [YTQUOTA] minsWithNewVids * 7cost = 350 (only on minutes when are new videos)
     - [FS:READ] 720exec * 1search = 720
     - [FS:WRITE] 720exec * numNewVideos = 50
  */
 
 const config = require('config')
-// const moment = require('moment-timezone')
+const moment = require('moment-timezone')
 const {google} = require('googleapis')
 const {Firestore} = require('@google-cloud/firestore')
 
@@ -36,9 +36,9 @@ module.exports = function() {
     
     // Look for videos without information or status
     let videoCol = firestore.collection('video')
-    videoCol.where('ytVideoId', '<', '\uf8ff')
-    videoCol.where('status', '==', 'new')
-    videoCol.limit(50)
+      .where('ytVideoId', '<', '\uf8ff')
+      .where('status', '==', 'new')
+      .limit(50)
     let videoSch = await videoCol.get()
 
     // Make list of videos iterable
@@ -46,22 +46,27 @@ module.exports = function() {
     videoSch.forEach(videoItem => {
       videoResults[videoItem.id] = videoItem.data()
     })
+    console.log('FOUND NEW VIDEOS', Object.keys(videoResults).length);
+    
 
-    // If no pending videos, 
+    // If no pending videos
     if (!Object.keys(videoResults).length)
       return Promise.resolve('No new videos, skipping videos.list')
 
     // Fetch information of all the new videos from YouTube API
     let ytResults = await youtube.videos.list({
-      part: 'snippet,status',
+      part: 'snippet,status,liveStreamingDetails',
       id: Object.values(videoResults).map(v => v.ytVideoId).join(','),
       hl: 'ja',
-      fields: 'items(id,snippet(channelId,title,description,publishedAt),status(embeddable))',
+      fields: 'items(id,snippet(channelId,title,description,publishedAt),status/embeddable,liveStreamingDetails)',
       maxResults: 50
     }).catch(err => {
       console.error('videosInfo() Unable to fetch videos.list', err)
       return null
     })
+
+    // Get current time
+    let nowMoment = moment()
 
     // Run through all new videos
     let videoInfos = ytResults.data.items
@@ -82,8 +87,37 @@ module.exports = function() {
         liveSchedule: null,
         liveStart: null,
         liveEnd: null,
-        lateStream: null,
-        duration: null,
+        lateSecs: null,
+        durationSecs: null,
+      }
+
+      // Video livestream status
+      if (videoInfo.liveStreamingDetails) {
+        // Is a livestream, check times
+        videoObj.liveSchedule = videoInfo.liveStreamingDetails.scheduledStartTime || null
+        videoObj.liveStart = videoInfo.liveStreamingDetails.actualStartTime || null
+        videoObj.liveEnd  = videoInfo.liveStreamingDetails.actualEndTime || null
+        let scheduleMoment = moment(videoObj.liveSchedule)
+        let startMoment = moment(videoObj.liveStart)
+        let endMoment = moment(videoObj.liveEnd)
+        // Determine video status
+        if (videoObj.liveEnd) {
+          videoObj.status = 'past'
+        } else if (videoObj.liveStart) {
+          videoObj.status = 'live'
+        } else if (nowMoment.isSameOrAfter(scheduleMoment)) {
+          videoObj.status = 'live' // waiting = not yet started, but scheduled will be considered live
+        } else {
+          videoObj.status = 'upcoming'
+        }
+        // Calculate other data
+        if (videoObj.liveEnd)
+          videoObj.durationSecs = moment.duration(endMoment.diff(startMoment)).as('seconds')
+        if (videoObj.liveStart)
+          videoObj.lateSecs = moment.duration(startMoment.diff(scheduleMoment)).as('seconds')
+      } else {
+        // Not a live stream, uploaded video
+        videoObj.status = 'uploaded'
       }
 
       // Save to firestore
