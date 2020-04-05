@@ -102,3 +102,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Custom
+gcp-key.json
+services/*/config/*.json
+!services/*/config/*.sample.json
+dev
