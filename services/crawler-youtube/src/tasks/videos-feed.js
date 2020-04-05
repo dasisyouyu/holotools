@@ -21,12 +21,19 @@ const {Firestore} = require('@google-cloud/firestore')
 
 const videoIdRegex = RegExp('<yt:videoId>(.*?)</yt:videoId>','gim')
 
+const GCP_AUTH = JSON.parse(process.env.GCP_AUTH)
+
 module.exports = function() {
   console.log('videosFeed() START');
   (async function(){
 
     // Initialize Firestore
-    const firestore = new Firestore()
+    const firestore = new Firestore({
+      credentials: {
+        client_email: GCP_AUTH.client_email,
+        private_key: GCP_AUTH.private_key,
+      }
+    })
 
     // To compile list of new videoIDs to be saved
     let videoIds = []

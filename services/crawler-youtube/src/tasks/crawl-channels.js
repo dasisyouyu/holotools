@@ -21,6 +21,7 @@ const {google} = require('googleapis')
 const {Firestore} = require('@google-cloud/firestore')
 
 const googleKey = process.env.GOOGLE_API_KEY
+const GCP_AUTH = JSON.parse(process.env.GCP_AUTH)
 
 module.exports = function() {
   console.log('crawlChannels() START');
@@ -33,7 +34,12 @@ module.exports = function() {
     })
 
     // Initialize Firestore
-    const firestore = new Firestore()
+    const firestore = new Firestore({
+      credentials: {
+        client_email: GCP_AUTH.client_email,
+        private_key: GCP_AUTH.private_key,
+      }
+    })
 
     // Channel Collection
     let updatedChannelInfos = []

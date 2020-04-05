@@ -8,7 +8,9 @@ const videosInfo = require('./tasks/videos-info')
 const videosLive = require('./tasks/videos-live')
 const crawlComments = require('./tasks/crawl-comments')
 
-console.log('RUNNING YOUTUBE CRAWLER', process.env.NODE_ENV, new Date().toString())
+const GCP_AUTH = JSON.parse(process.env.GCP_AUTH)
+
+console.log('RUNNING YOUTUBE CRAWLER', process.env.NODE_ENV, new Date().toString(), GCP_AUTH.type)
 
 // Update channel information and get today's stats
 schedule.scheduleJob(config.timings['crawl-channels'], function(){
