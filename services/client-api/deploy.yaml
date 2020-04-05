@@ -1,0 +1,40 @@
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "client-api"
+  namespace: "default"
+  labels:
+    app: "client-api"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "client-api"
+  template:
+    metadata:
+      labels:
+        app: "client-api"
+    spec:
+      containers:
+      - name: "client-api-1"
+        image: "gcr.io/vtubersubs/holotools/client-api"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "client-api-hpa-xxxx"
+  namespace: "default"
+  labels:
+    app: "client-api"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "client-api"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
