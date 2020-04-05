@@ -56,15 +56,12 @@ module.exports = function() {
       part: 'snippet,status',
       id: Object.values(videoResults).map(v => v.ytVideoId).join(','),
       hl: 'ja',
-      fields: 'items(id,snippet(channelId,title,description,publishedAt),status(uploadStatus,embeddable))',
+      fields: 'items(id,snippet(channelId,title,description,publishedAt),status(embeddable))',
       maxResults: 50
     }).catch(err => {
       console.error('videosInfo() Unable to fetch videos.list', err)
       return null
     })
-
-    // Get a moment object with current time
-    // let nowMoment = moment()
 
     // Run through all new videos
     let videoInfos = ytResults.data.items
@@ -88,38 +85,6 @@ module.exports = function() {
         lateStream: null,
         duration: null,
       }
-
-      // Video livestream status
-      // if (videoInfo.liveStreamingDetails) {
-      //   videoObj.liveSchedule = videoInfo.liveStreamingDetails.scheduledStartTime || null
-      //   videoObj.liveStart = videoInfo.liveStreamingDetails.actualStartTime || null
-      //   videoObj.liveEnd  = videoInfo.liveStreamingDetails.actualEndTime || null
-      //   let scheduleMoment = moment(videoObj.liveSchedule)
-      //   let startMoment = moment(videoObj.liveStart)
-      //   let endMoment = moment(videoObj.liveEnd)
-      //   // Determine video status
-      //   if (videoObj.liveEnd) {
-      //     videoObj.status = 'past'
-      //   } else if (videoObj.liveStart) {
-      //     videoObj.status = 'live'
-      //   } else if (nowMoment.isSameOrAfter(scheduleMoment)) {
-      //     videoObj.status = 'live' // waiting = not yet started, but scheduled will be considered live
-      //   } else {
-      //     videoObj.status = 'upcoming'
-      //   }
-      //   // Calculate other data
-      //   if (videoObj.liveEnd)
-      //     videoObj.duration = moment.duration(startMoment.diff(endMoment)).as('seconds')
-      //   if (videoObj.liveStart)
-      //     videoObj.lateStream = moment.duration(scheduleMoment.diff(startMoment)).as('seconds')
-      // } else {
-      //   // Not a live stream, uploaded vide
-      //   if (videoInfo.status.uploadStatus == 'processed') {
-      //     videoObj.status = 'uploaded'
-      //   } else {
-      //     videoObj.status = 'unknown'
-      //   }
-      // }
 
       // Save to firestore
       const videoKey = 'video/yt:' + videoInfo.id
