@@ -85,6 +85,7 @@ module.exports = function() {
         liveSchedule: null,
         liveStart: null,
         liveEnd: null,
+        liveViewers: null,
         lateSecs: null,
         durationSecs: null,
       }
@@ -95,6 +96,7 @@ module.exports = function() {
         videoObj.liveSchedule = videoInfo.liveStreamingDetails.scheduledStartTime || null
         videoObj.liveStart = videoInfo.liveStreamingDetails.actualStartTime || null
         videoObj.liveEnd  = videoInfo.liveStreamingDetails.actualEndTime || null
+        videoObj.liveViewers  = videoInfo.liveStreamingDetails.concurrentViewers || null
         let scheduleMoment = moment(videoObj.liveSchedule)
         let startMoment = moment(videoObj.liveStart)
         let endMoment = moment(videoObj.liveEnd)
