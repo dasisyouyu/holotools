@@ -16,9 +16,9 @@ schedule.scheduleJob(config.timings['crawl-channels'], function(){
 })
 
 // Gets all videos from all channels since the beginning
-schedule.scheduleJob(config.timings['crawl-videos'], function(){
-  crawlVideos()
-})
+// schedule.scheduleJob(config.timings['crawl-videos'], function(){
+//   crawlVideos()
+// })
 
 // Gets latest videos from each channel through YouTube XML feed
 schedule.scheduleJob(config.timings['videos-feed'], function(){
@@ -26,7 +26,7 @@ schedule.scheduleJob(config.timings['videos-feed'], function(){
 })
 
 // Checks the status of newly added videos if they're past, upcoming, or live
-schedule.scheduleJob(config.timings['videos-status'], function(){
+schedule.scheduleJob(config.timings['videos-info'], function(){
   videosInfo()
 })
 
@@ -36,6 +36,6 @@ schedule.scheduleJob(config.timings['videos-live'], function(){
 })
 
 // Gets comments from videos to check for timestamps
-schedule.scheduleJob(config.timings['crawl-comments'], function(){
-  crawlComments()
-})
+// schedule.scheduleJob(config.timings['crawl-comments'], function(){
+//   crawlComments()
+// })
