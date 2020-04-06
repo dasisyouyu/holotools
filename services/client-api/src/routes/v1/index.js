@@ -11,10 +11,10 @@ const router = new Router();
 // Initialize Firestore
 const firestore = new Firestore({
   // keyFilename: 'gcp-key.json',
-  credentials: {
-    client_email: GOOGLE_AUTH.client_email,
-    private_key: GOOGLE_AUTH.private_key,
-  },
+  // credentials: {
+  //   client_email: GOOGLE_AUTH.client_email,
+  //   private_key: GOOGLE_AUTH.private_key,
+  // },
 });
 
 // Initialize memcached
