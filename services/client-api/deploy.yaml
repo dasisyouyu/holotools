@@ -30,8 +30,6 @@ spec:
         app: "client-api"
     spec:
       containers:
-      - name: "nginx-client-api"
-        image: "nginx:alpine"
       - name: "client-api-2"
         image: "gcr.io/vtubersubs/holotools/client-api"
         env:
@@ -69,31 +67,9 @@ spec:
     name: "client-api"
     apiVersion: "apps/v1"
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   metrics:
   - type: "Resource"
     resource:
       name: "cpu"
       targetAverageUtilization: 80
----
-apiVersion: v1
-kind: Service
-metadata:
-  generateName: client-api-
-  labels:
-    app: client-api
-    app.kubernetes.io/managed-by: gcp-cloud-build-deploy
-  name: client-api-9tbr9
-  namespace: default
-  selfLink: /api/v1/namespaces/default/services/client-api-9tbr9
-spec:
-  externalTrafficPolicy: Cluster
-  ports:
-  - nodePort: 31607
-    port: 80
-    protocol: TCP
-    targetPort: 8080
-  selector:
-    app: client-api
-  sessionAffinity: None
-  type: LoadBalancer
