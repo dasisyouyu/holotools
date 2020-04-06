@@ -1,0 +1,7 @@
+steps:
+- name: "gcr.io/cloud-builders/gke-deploy"
+  args:
+  - run
+  - --filename=./services/client-api/deploy.yaml
+  - --location=asia-northeast1-a	
+  - --cluster=holotools
