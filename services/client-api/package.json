@@ -12,6 +12,7 @@
     "cross-env": "^7.0.2",
     "express": "^4.17.1",
     "helmet": "^3.22.0",
+    "memcached": "^2.2.2",
     "moment-timezone": "^0.5.28",
     "url": "^0.11.0",
     "uuid": "^7.0.3"
