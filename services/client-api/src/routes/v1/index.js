@@ -33,6 +33,7 @@ router.get('/live', (req, res) => {
       });
     });
 
+    console.log('cacheLive', cacheLive);
     if (cacheLive) return cacheLive;
 
     // Result structure
@@ -87,7 +88,15 @@ router.get('/live', (req, res) => {
     });
 
     // Save results to cache
-    memcached.set('live', JSON.stringify(results), 60);
+    await new Promise((resolve, reject) => {
+      memcached.set('live', JSON.stringify(results), 30, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    })
+        .catch((err) => {
+          console.error('ERR memcached.set', err);
+        });
 
     // Result
     return results;
