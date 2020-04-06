@@ -21,7 +21,7 @@ const routes1 = require('./routes/v1');
 app.use('/v1', routes1);
 
 app.get('/test', (req, res) => {
-  const testConfigMapJson = JSON.parse(process.env.TEST_CONFIG_MAP_JSON);
+  const testConfigMapJson = process.env.TEST_CONFIG_MAP_JSON;
   console.log('testConfigMapJson', testConfigMapJson);
   res.status(200).send('ok');
 });
