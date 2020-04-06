@@ -2,7 +2,7 @@
 apiVersion: "v1"
 kind: "ConfigMap"
 metadata:
-  name: "client-api-config-prod"
+  name: "holotools-config"
   namespace: "default"
   labels:
     app: "client-api"
@@ -11,6 +11,7 @@ data:
   SERVER_PORT: "8080"
   GOOGLE_API_KEY: ""
   GOOGLE_SERVICE_JSON: ""
+  MEMCACHED_CLUSTERIP: "10.85.15.101"
 ---
 apiVersion: "apps/v1"
 kind: "Deployment"
@@ -37,21 +38,27 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: "NODE_ENV"
-              name: "client-api-config-prod"
+              name: "holotools-config"
         - name: "SERVER_PORT"
           valueFrom:
             configMapKeyRef:
               key: "SERVER_PORT"
-              name: "client-api-config-prod"
+              name: "holotools-config"
         - name: "GOOGLE_API_KEY"
           valueFrom:
             configMapKeyRef:
               key: "GOOGLE_API_KEY"
-              name: "client-api-config-prod"
+              name: "holotools-config"
         - name: "GOOGLE_SERVICE_JSON"
-          value: ''
+          valueFrom:
+            configMapKeyRef:
+              key: "GOOGLE_SERVICE_JSON"
+              name: "holotools-config"
         - name: "MEMCACHED_CLUSTERIP"
-          value: ''
+          valueFrom:
+            configMapKeyRef:
+              key: "MEMCACHED_CLUSTERIP"
+              name: "holotools-config"
 ---
 apiVersion: "autoscaling/v2beta1"
 kind: "HorizontalPodAutoscaler"
