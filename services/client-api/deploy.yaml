@@ -30,8 +30,6 @@ spec:
         app: "client-api"
     spec:
       containers:
-      - name: "nginx-client-api"
-        image: "nginx:alpine"
       - name: "client-api-2"
         image: "gcr.io/vtubersubs/holotools/client-api"
         env:
@@ -69,7 +67,7 @@ spec:
     name: "client-api"
     apiVersion: "apps/v1"
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   metrics:
   - type: "Resource"
     resource:
