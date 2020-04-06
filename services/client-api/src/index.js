@@ -5,15 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const Memcached = require('memcached');
 
-const GOOGLE_AUTH = JSON.parse(process.env.GOOGLE_SERVICE_JSON);
-console.log(GOOGLE_AUTH.client_email, GOOGLE_AUTH.private_key);
-
 const SERVER_PORT = process.env.SERVER_PORT || config.server.port || 8080;
-
-const memcached = new Memcached('10.85.15.101:11211');
-memcached.on('failure', function( details ) {
-  console.log('Cannot connect to memcached', details);
-});
 
 const app = express();
 app.use(helmet({}));
@@ -28,6 +20,12 @@ app.get('/', (req, res) => {
 const routes1 = require('./routes/v1');
 
 app.use('/v1', routes1);
+
+app.get('/test', (req, res) => {
+  const testConfigMapJson = JSON.parse(process.env.TEST_CONFIG_MAP_JSON);
+  console.log('testConfigMapJson', testConfigMapJson);
+  res.status(200).send('ok');
+});
 
 app.listen(SERVER_PORT, () => {
   console.log('HOLOTOOLS WEB | :%d | %s | %s', SERVER_PORT, config.env, new Date().toString());

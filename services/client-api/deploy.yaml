@@ -49,10 +49,9 @@ spec:
               key: "GOOGLE_API_KEY"
               name: "client-api-config-prod"
         - name: "GOOGLE_SERVICE_JSON"
-          valueFrom:
-            configMapKeyRef:
-              key: "GOOGLE_SERVICE_JSON"
-              name: "client-api-config-prod"
+          value: ''
+        - name: "MEMCACHED_CLUSTERIP"
+          value: ''
 ---
 apiVersion: "autoscaling/v2beta1"
 kind: "HorizontalPodAutoscaler"

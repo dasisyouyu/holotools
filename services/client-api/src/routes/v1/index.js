@@ -16,6 +16,12 @@ const firestore = new Firestore({
   },
 });
 
+// Initialize memcached
+const memcached = new Memcached(process.env.MEMCACHED_CLUSTERIP + ':11211');
+memcached.on('failure', function( details ) {
+  console.log('Cannot connect to memcached', details);
+});
+
 router.get('/live', (req, res) => {
   (async function() {
     // Check cache
