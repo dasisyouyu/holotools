@@ -1,0 +1,41 @@
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "cache"
+  namespace: "default"
+  labels:
+    app: "cache"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "cache"
+  template:
+    metadata:
+      labels:
+        app: "cache"
+    spec:
+      containers:
+      - name: "memcached-1"
+        image: "memcached:alpine"
+---
+apiVersion: "autoscaling/v2beta1"
+kind: "HorizontalPodAutoscaler"
+metadata:
+  name: "cache-hpa-xxxx"
+  namespace: "default"
+  labels:
+    app: "cache"
+spec:
+  scaleTargetRef:
+    kind: "Deployment"
+    name: "cache"
+    apiVersion: "apps/v1"
+  minReplicas: 1
+  maxReplicas: 1
+  metrics:
+  - type: "Resource"
+    resource:
+      name: "cpu"
+      targetAverageUtilization: 80
